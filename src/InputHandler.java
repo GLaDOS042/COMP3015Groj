@@ -57,8 +57,6 @@ public class InputHandler {
         int x = in.readInt();
         int y = in.readInt();
 
-        System.out.printf("%d-(%d,%d)\n",color,x,y);
-
         ui.receivePixelMessage(new Pixel(color,x,y));
 
     }
@@ -72,7 +70,6 @@ public class InputHandler {
             int x = in.readInt();
             int y = in.readInt();
 
-            System.out.printf("%d-(%d,%d)\n",color,x,y);
             ui.receivePixelMessage(new Pixel(color,x,y));
         }
     }

@@ -83,8 +83,14 @@ public class UI extends JFrame {
 	}
 
 	private UI() throws IOException {
-
-		socket = new Socket("127.0.0.1", 12345);
+		ServerFinder finder = new ServerFinder();
+		String ip = finder.findAddress();
+		if (ip.equals(""))
+		{
+			System.out.println("No server found");
+			System.exit(0);
+		}
+		socket = new Socket(ip, 12345);
 		in = new DataInputStream(socket.getInputStream());
 		out = new DataOutputStream(socket.getOutputStream());
 		inputHandler = new InputHandler(in,this);
@@ -154,6 +160,11 @@ public class UI extends JFrame {
 				if (paintMode == PaintMode.Area && e.getX() >= 0 && e.getY() >= 0)
 					outputHandler.sendGroupPixel(
 							selectedColor,paintArea(e.getX() / blockSize, e.getY() / blockSize));
+				else if (paintMode == PaintMode.Pixel && e.getX() >= 0 && e.getY() >= 0)
+				{
+					Pixel p = new Pixel(selectedColor,e.getX()/blockSize,e.getY()/blockSize);
+					outputHandler.sendPixel(p);
+				}
 
 			}
 		});
@@ -164,7 +175,6 @@ public class UI extends JFrame {
 			public void mouseDragged(MouseEvent e) {
 				if (paintMode == PaintMode.Pixel && e.getX() >= 0 && e.getY() >= 0)
 				{
-					//paintPixel(e.getX() / blockSize, e.getY() / blockSize);
 					Pixel p = new Pixel(selectedColor,e.getX()/blockSize,e.getY()/blockSize);
 					outputHandler.sendPixel(p);
 				}
