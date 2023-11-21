@@ -81,14 +81,14 @@ public class InputHandler {
         int sizeX = in.readInt();
         int sizeY = in.readInt();
         int[][] copy = new int[sizeX][sizeY];
-        for (int y = 0; y< sizeY; sizeY++)
+        for (int y = 0; y< sizeY; y++)
         {
-            for (int x = 0; x< sizeX; sizeX++)
+            for (int x = 0; x< sizeX; x++)
             {
                 copy[x][y] = in.readInt();
             }
         }
-//        ui.data = new int[sizeX][sizeY];
-//        ui.refresh();
+        ui.data = copy;
+        ui.refresh();
     }
 }
