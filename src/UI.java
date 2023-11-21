@@ -89,6 +89,7 @@ public class UI extends JFrame {
 		out = new DataOutputStream(socket.getOutputStream());
 		inputHandler = new InputHandler(in,this);
 		outputHandler = new OutputHandler(out);
+		outputHandler.requestCopy();
 		Thread t = new Thread(() -> {
 			inputHandler.receive();
 		});
@@ -152,7 +153,9 @@ public class UI extends JFrame {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (paintMode == PaintMode.Area && e.getX() >= 0 && e.getY() >= 0)
-					paintArea(e.getX() / blockSize, e.getY() / blockSize);
+					outputHandler.sendGroupPixel(
+							selectedColor,paintArea(e.getX() / blockSize, e.getY() / blockSize));
+
 			}
 		});
 
@@ -343,7 +346,11 @@ public class UI extends JFrame {
 		if (col >= data.length || row >= data[0].length)
 			return filledPixels;
 
-		int oriColor = data[col][row];
+		int[][] temp = new int[this.data.length][];
+		for (int i = 0; i < this.data.length; i++) {
+			temp[i] = this.data[i].clone();
+		}
+		int oriColor = temp[col][row];
 		LinkedList<Point> buffer = new LinkedList<Point>();
 
 		if (oriColor != selectedColor) {
@@ -354,19 +361,19 @@ public class UI extends JFrame {
 				int x = p.x;
 				int y = p.y;
 
-				if (data[x][y] != oriColor)
+				if (temp[x][y] != oriColor)
 					continue;
 
-				data[x][y] = selectedColor;
+				temp[x][y] = selectedColor;
 				filledPixels.add(p);
 
-				if (x > 0 && data[x - 1][y] == oriColor)
+				if (x > 0 && temp[x - 1][y] == oriColor)
 					buffer.add(new Point(x - 1, y));
-				if (x < data.length - 1 && data[x + 1][y] == oriColor)
+				if (x < temp.length - 1 && data[x + 1][y] == oriColor)
 					buffer.add(new Point(x + 1, y));
-				if (y > 0 && data[x][y - 1] == oriColor)
+				if (y > 0 && temp[x][y - 1] == oriColor)
 					buffer.add(new Point(x, y - 1));
-				if (y < data[0].length - 1 && data[x][y + 1] == oriColor)
+				if (y < temp[0].length - 1 && temp[x][y + 1] == oriColor)
 					buffer.add(new Point(x, y + 1));
 			}
 			paintPanel.repaint();

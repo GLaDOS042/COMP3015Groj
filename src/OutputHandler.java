@@ -53,4 +53,15 @@ public class OutputHandler {
         }
     }
 
+    void requestCopy()
+    {
+        try {
+            out.writeInt(42); //0 means that is chat message
+            out.flush();
+
+        }catch(IOException ex) {
+            ex.printStackTrace(); //for debugging only. remove it after development
+        }
+    }
+
 }
