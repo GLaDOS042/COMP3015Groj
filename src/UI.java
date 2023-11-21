@@ -89,7 +89,6 @@ public class UI extends JFrame {
 		out = new DataOutputStream(socket.getOutputStream());
 		inputHandler = new InputHandler(in,this);
 		outputHandler = new OutputHandler(out);
-		outputHandler.requestCopy();
 		Thread t = new Thread(() -> {
 			inputHandler.receive();
 		});
@@ -395,6 +394,7 @@ public class UI extends JFrame {
 		this.data = data;
 		this.blockSize = blockSize;
 		paintPanel.setPreferredSize(new Dimension(data.length * blockSize, data[0].length * blockSize));
+		outputHandler.requestCopy();
 		paintPanel.repaint();
 	}
 }

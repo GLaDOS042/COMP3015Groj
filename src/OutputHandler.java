@@ -57,7 +57,6 @@ public class OutputHandler {
     {
         try {
             out.writeInt(42); //0 means that is chat message
-            out.writeInt(0);
             out.flush();
 
         }catch(IOException ex) {

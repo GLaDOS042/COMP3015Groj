@@ -34,7 +34,6 @@ public class InputHandler {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-            receive();
         }
     }
 
@@ -89,7 +88,7 @@ public class InputHandler {
                 copy[x][y] = in.readInt();
             }
         }
-        ui.data = new int[sizeX][sizeY];
-        ui.refresh();
+//        ui.data = new int[sizeX][sizeY];
+//        ui.refresh();
     }
 }
