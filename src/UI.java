@@ -381,6 +381,10 @@ public class UI extends JFrame {
 		return filledPixels;
 	}
 
+	public void refresh() {
+		paintPanel.repaint();
+	}
+
 	/**
 	 * set pixel data and block size
 	 * 

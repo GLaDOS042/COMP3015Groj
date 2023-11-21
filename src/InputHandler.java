@@ -24,6 +24,9 @@ public class InputHandler {
                     case 2:
                         receiveGroupPixelMessage();
                         break;
+                    case 42:
+                        receiveCopy();
+                        break;
                     default:
                         //TODO other things else?!
                 }
@@ -73,5 +76,20 @@ public class InputHandler {
             System.out.printf("%d-(%d,%d)\n",color,x,y);
             ui.receivePixelMessage(new Pixel(color,x,y));
         }
+    }
+
+    private void receiveCopy() throws IOException{
+        int sizeX = in.readInt();
+        int sizeY = in.readInt();
+        int[][] copy = new int[sizeX][sizeY];
+        for (int y = 0; y< sizeY; sizeY++)
+        {
+            for (int x = 0; x< sizeX; sizeX++)
+            {
+                copy[x][y] = in.readInt();
+            }
+        }
+        ui.data = new int[sizeX][sizeY];
+        ui.refresh();
     }
 }
