@@ -160,7 +160,6 @@ public class Server {
 	}
 
 	private void handleCopyRequest(Socket clientSocket) throws IOException {
-		System.out.println("Copy request received");
 
 		try {
 			DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
@@ -178,6 +177,28 @@ public class Server {
 		}
 	}
 
+	private void handleLoadRequest(DataInputStream in) throws IOException
+	{
+		int sizeX = in.readInt();
+		int sizeY = in.readInt();
+
+		for (int i = 0; i < sizeX; i++) {
+			for (int j = 0; j < sizeY; j++) {
+				data.get(0).data[i][j] = in.readInt();
+			}
+		}
+		synchronized (list) {
+			for (int i = 0; i < list.size(); i++) {
+				try {
+					Socket s = list.get(i);
+					handleCopyRequest(s);
+				} catch (IOException ex) {
+
+				}
+			}
+		}
+
+	}
 
 
 	public void serve(Socket clientSocket) throws IOException {
@@ -197,8 +218,11 @@ public class Server {
 				handleGroupPixelMessage(in);
 				break;
 			case 42:
+				System.out.println("Copy request received");
 				handleCopyRequest(clientSocket);
 				break;
+			case 99:
+				handleLoadRequest(in);
 			default:
 				// TODO: something else???
 

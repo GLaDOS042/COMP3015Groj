@@ -1,9 +1,6 @@
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -22,9 +19,6 @@ import java.util.List;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 
@@ -32,6 +26,7 @@ import javax.swing.border.LineBorder;
 enum PaintMode {Pixel, Area};
 
 public class UI extends JFrame {
+	String UserName;
 	Socket socket;
 	DataInputStream in;
 	DataOutputStream out;
@@ -44,6 +39,9 @@ public class UI extends JFrame {
 	private JPanel paintPanel;
 	private JToggleButton tglPen;
 	private JToggleButton tglBucket;
+
+	private JToggleButton save;
+	private JToggleButton load;
 
 	private static UI instance;
 	private int selectedColor = -543230; // golden
@@ -83,6 +81,7 @@ public class UI extends JFrame {
 	}
 
 	private UI() throws IOException {
+		UserName = (new NameAsker().Ask());
 		ServerFinder finder = new ServerFinder();
 		String ip = finder.findAddress();
 		if (ip.equals(""))
@@ -241,6 +240,10 @@ public class UI extends JFrame {
 		tglBucket = new JToggleButton("Bucket");
 		toolPanel.add(tglBucket);
 
+		save = new JToggleButton("Save");
+		toolPanel.add(save);
+		load = new JToggleButton("load");
+		toolPanel.add(load);
 		// change the paint mode to PIXEL mode
 		tglPen.addActionListener(new ActionListener() {
 			@Override
@@ -258,6 +261,19 @@ public class UI extends JFrame {
 				tglPen.setSelected(false);
 				tglBucket.setSelected(true);
 				paintMode = PaintMode.Area;
+			}
+		});
+
+		save.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				outputHandler.save(data);
+			}
+		});
+		load.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				inputHandler.load();
 			}
 		});
 
@@ -324,7 +340,7 @@ public class UI extends JFrame {
 	 */
 	private void onTextInputted(String text) {
 //		chatArea.setText(chatArea.getText() + text + "\n");
-		outputHandler.sendMessage(text);
+		outputHandler.sendMessage(UserName+": "+text);
 	}
 
 	/**
@@ -357,7 +373,7 @@ public class UI extends JFrame {
 
 		int[][] temp = new int[this.data.length][];
 		for (int i = 0; i < this.data.length; i++) {
-			temp[i] = this.data[i].clone();
+			System.arraycopy(this.data[i], 0, temp[i], 0, this.data[i].length);
 		}
 		int oriColor = temp[col][row];
 		LinkedList<Point> buffer = new LinkedList<Point>();

@@ -27,6 +27,8 @@ public class ServerFinder {
                     return receivedPacket.getAddress().toString().replace("/","");
             }
         } catch (IOException e) {
+            if(e.getMessage().equals("Address already in use (Bind failed)"))
+                return "127.0.0.1";
             System.err.println("System error: " + e.getMessage());
         }
         return "";

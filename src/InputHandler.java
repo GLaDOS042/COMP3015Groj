@@ -1,5 +1,11 @@
 import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import java.io.File;
 
 public class InputHandler {
     DataInputStream in;
@@ -46,6 +52,8 @@ public class InputHandler {
         in.read(buffer, 0, len);
 
         String msg = new String(buffer, 0, len);
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+        msg = time + "\n" + msg;
         System.out.println(msg);
 
         ui.receiveChatMessage(msg);
@@ -88,4 +96,55 @@ public class InputHandler {
         ui.data = copy;
         ui.refresh();
     }
+    void load()
+    {
+        int[][] data = null;;
+        int rows = 0;
+        int cols = 0;
+        try {
+            // Create a file chooser dialog
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Open File");
+
+            // Show the dialog and get the user's selection
+            int userSelection = fileChooser.showOpenDialog(new JFrame());
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                // Get the selected file
+                File fileToOpen = fileChooser.getSelectedFile();
+
+                // Create a data input stream to read from the file
+                DataInputStream fi = new DataInputStream(new FileInputStream(fileToOpen));
+
+                // Read the dimensions of the data
+                rows = fi.readInt();
+                cols = fi.readInt();
+
+                // Create the data array
+                data = new int[rows][cols];
+
+                // Read the data from the file
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < cols; j++) {
+                        data[i][j] = fi.readInt();
+                    }
+                }
+
+                // Close the data input stream
+                fi.close();
+
+                System.out.println("File read successfully.");
+            } else {
+                System.out.println("Open operation cancelled by the user.");
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace(); //for debugging only. remove it after development
+        }
+        if(rows != 0 && cols != 0)
+        {
+            ui.outputHandler.sendCopy(rows,cols,data);
+        }
+
+    }
+
 }
