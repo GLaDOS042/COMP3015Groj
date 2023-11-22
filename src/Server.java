@@ -22,7 +22,6 @@ public class Server {
 		}
 
 	}
-
 	ServerSocket serverSocket;
 	ArrayList<Socket> list = new ArrayList();
 	ArrayList<Data> data = new ArrayList();
@@ -46,7 +45,7 @@ public class Server {
 
 						if (content.equals(msg)) {
 							System.out.println("Server found");
-							packet = new DatagramPacket(reply.getBytes(), reply.length(), receivedPacket.getAddress(), receivedPacket.getPort());
+							packet = new DatagramPacket((reply+serverSocket.getLocalPort()).getBytes(), reply.length(), receivedPacket.getAddress(), receivedPacket.getPort());
 							socket.send(packet);
 						}
 					}
@@ -200,6 +199,12 @@ public class Server {
 
 	}
 
+	private void listStudio(Socket clientSocket)
+	{
+		int StudioNum = data.size();
+
+	}
+
 
 	public void serve(Socket clientSocket) throws IOException {
 		DataInputStream in = new DataInputStream(clientSocket.getInputStream());
@@ -220,6 +225,9 @@ public class Server {
 			case 42:
 				System.out.println("Copy request received");
 				handleCopyRequest(clientSocket);
+				break;
+			case 88:
+				listStudio(clientSocket);
 				break;
 			case 99:
 				handleLoadRequest(in);

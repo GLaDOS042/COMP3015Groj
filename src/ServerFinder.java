@@ -9,7 +9,8 @@ public class ServerFinder {
 
     }
 
-    public String findAddress(){
+    public String[] findAddress(){
+        String[] result = new String[2];
         try{
 
             String msg = "Finding Server";
@@ -23,15 +24,19 @@ public class ServerFinder {
                 socket.receive(receivedPacket);
                 String content = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
 
-                if (content.equals(reply))
-                    return receivedPacket.getAddress().toString().replace("/","");
+                if (content.contains(reply)) {
+                    result[0] = receivedPacket.getAddress().toString().replace("/", "");
+                    result[1] = content.replace(reply, "");
+                }
             }
         } catch (IOException e) {
-            if(e.getMessage().equals("Address already in use (Bind failed)"))
-                return "127.0.0.1";
+            if (e.getMessage().equals("Address already in use (Bind failed)")){
+                result[0] = "127.0.0.1";
+                result[1] = "12345";
+            }
             System.err.println("System error: " + e.getMessage());
         }
-        return "";
+        return result;
     }
 
 

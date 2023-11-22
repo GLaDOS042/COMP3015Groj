@@ -83,13 +83,13 @@ public class UI extends JFrame {
 	private UI() throws IOException {
 		UserName = (new NameAsker().Ask());
 		ServerFinder finder = new ServerFinder();
-		String ip = finder.findAddress();
-		if (ip.equals(""))
+		String[] ip = finder.findAddress();
+		if (ip[0].equals(""))
 		{
 			System.out.println("No server found");
 			System.exit(0);
 		}
-		socket = new Socket(ip, 12345);
+		socket = new Socket(ip[0], Integer.parseInt(ip[1]));
 		in = new DataInputStream(socket.getInputStream());
 		out = new DataOutputStream(socket.getOutputStream());
 		inputHandler = new InputHandler(in,this);
