@@ -42,7 +42,6 @@ public class Server {
 					while(true) {
 
 						socket.receive(receivedPacket);
-						System.out.println("Server found");
 						String content = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
 
 						if (content.equals(msg)) {
