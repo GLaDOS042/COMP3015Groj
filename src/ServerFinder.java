@@ -24,7 +24,7 @@ public class ServerFinder {
                 String content = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
 
                 if (content.equals(reply))
-                    return receivedPacket.getAddress().toString();
+                    return receivedPacket.getAddress().toString().replace("/","");
             }
         } catch (IOException e) {
             System.err.println("System error: " + e.getMessage());
