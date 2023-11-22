@@ -22,6 +22,7 @@ public class Server {
 		}
 
 	}
+
 	ServerSocket serverSocket;
 	ArrayList<Socket> list = new ArrayList();
 	ArrayList<Data> data = new ArrayList();
@@ -42,10 +43,9 @@ public class Server {
 
 						socket.receive(receivedPacket);
 						String content = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
-
 						if (content.equals(msg)) {
-							System.out.println("Server found");
-							packet = new DatagramPacket((reply+serverSocket.getLocalPort()).getBytes(), reply.length(), receivedPacket.getAddress(), receivedPacket.getPort());
+							int port =  serverSocket.getLocalPort();
+							packet = new DatagramPacket((reply+port).getBytes(), (reply+port).length(), receivedPacket.getAddress(), receivedPacket.getPort());
 							socket.send(packet);
 						}
 					}

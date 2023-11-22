@@ -27,12 +27,14 @@ public class ServerFinder {
                 if (content.contains(reply)) {
                     result[0] = receivedPacket.getAddress().toString().replace("/", "");
                     result[1] = content.replace(reply, "");
+                    return result;
                 }
             }
         } catch (IOException e) {
             if (e.getMessage().equals("Address already in use (Bind failed)")){
                 result[0] = "127.0.0.1";
                 result[1] = "12345";
+                return result;
             }
             System.err.println("System error: " + e.getMessage());
         }
