@@ -33,12 +33,5 @@ public class ServerFinder {
     }
 
 
-    // public static void main(String[] args) {
-    // 	try {
-    // 		new Finder();
-    // 	} catch (IOException e) {
-    // 		System.err.println("System error: " + e.getMessage());
-    // 	}
-    // }
 
 }
