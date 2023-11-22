@@ -97,9 +97,17 @@ public class UI extends JFrame {
 		Thread t = new Thread(() -> {
 			inputHandler.receive();
 		});
+		Thread i = new Thread(() -> {
+			outputHandler.requestCopy();
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		});
 
 		t.start();
-
+		i.start();
 		setTitle("KidPaint");
 
 		JPanel basePanel = new JPanel();
@@ -373,7 +381,7 @@ public class UI extends JFrame {
 
 		int[][] temp = new int[this.data.length][];
 		for (int i = 0; i < this.data.length; i++) {
-			System.arraycopy(this.data[i], 0, temp[i], 0, this.data[i].length);
+			temp[i] = this.data[i].clone();
 		}
 		int oriColor = temp[col][row];
 		LinkedList<Point> buffer = new LinkedList<Point>();
