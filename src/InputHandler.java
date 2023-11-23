@@ -33,6 +33,11 @@ public class InputHandler {
                     case 42:
                         receiveCopy();
                         break;
+                    case 88:
+                        receiveStudioList();
+                        break;
+                    case 152:
+                        receiveGroupNo();
                     default:
                         //TODO other things else?!
                 }
@@ -86,15 +91,14 @@ public class InputHandler {
         int sizeX = in.readInt();
         int sizeY = in.readInt();
         int[][] copy = new int[sizeX][sizeY];
-        for (int y = 0; y< sizeY; y++)
+        for (int x = 0; x< sizeX; x++)
         {
-            for (int x = 0; x< sizeX; x++)
+            for (int y = 0; y< sizeY; y++)
             {
                 copy[x][y] = in.readInt();
             }
         }
-        ui.data = copy;
-        ui.refresh();
+        ui.setData(copy, 20);
     }
     void load()
     {
@@ -146,5 +150,21 @@ public class InputHandler {
         }
 
     }
+    void receiveGroupNo() throws IOException{
+        int groupNo = in.readInt();
+        ui.outputHandler.groupNo = groupNo;
+    }
 
+    void receiveStudioList() throws IOException{
+        int size = in.readInt();
+        String[] StudioName = new String[size];
+        for (int i = 0; i < size; i++){
+            byte[] buffer = new byte[1024];
+            int len = in.readInt();
+            in.read(buffer, 0, len);
+            StudioName[i] = new String(buffer, 0, len);
+        }
+        ui.StudioName = StudioName;
+
+    }
 }

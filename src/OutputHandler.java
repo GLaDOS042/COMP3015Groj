@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 
 public class OutputHandler {
     DataOutputStream out;
+    int groupNo = Integer.MIN_VALUE;
     OutputHandler(DataOutputStream out){
         this.out = out;
     }
@@ -16,6 +17,7 @@ public class OutputHandler {
     {
         try {
             out.writeInt(1); //that is pixel message
+            out.writeInt(groupNo);
             out.writeInt(pixel.color);
             out.writeInt(pixel.x);
             out.writeInt(pixel.y);
@@ -30,6 +32,7 @@ public class OutputHandler {
     {
         try {
             out.writeInt(0); //0 means that is chat message
+            out.writeInt(groupNo);
             out.writeInt(text.length());
             out.write(text.getBytes());
             out.flush();
@@ -43,6 +46,7 @@ public class OutputHandler {
     {
         try {
             out.writeInt(2); //that is pixel message
+            out.writeInt(groupNo);
             out.writeInt(color);
             out.writeInt(pixels.size());
             for (Point pixel : pixels)
@@ -61,6 +65,7 @@ public class OutputHandler {
     {
         try {
             out.writeInt(42); //0 means that is chat message
+            out.writeInt(groupNo);
             out.flush();
 
         }catch(IOException ex) {
@@ -110,6 +115,7 @@ public class OutputHandler {
     {
         try {
             out.writeInt(99); // send the message type
+            out.writeInt(groupNo);
             out.writeInt(row);
             out.writeInt(col);
             for (int i = 0; i < row; i++) {
@@ -118,6 +124,40 @@ public class OutputHandler {
                 }
             }
             out.flush();
+        } catch (IOException ex) {
+            System.out.println("The client is disconnected already");
+        }
+    }
+    void getStudioList()
+    {
+        try {
+            out.writeInt(88); // send the message type
+            out.writeInt(Integer.MIN_VALUE);
+            out.flush();
+        } catch (IOException ex) {
+            System.out.println("The client is disconnected already");
+        }
+    }
+
+    void createStudio(int sizeX, int sizeY, String name)
+    {
+        try {
+            out.writeInt(152); // send the message type
+            out.writeInt(Integer.MIN_VALUE);
+            out.writeInt(sizeX);
+            out.writeInt(sizeY);
+            out.writeInt(name.length());
+            out.write(name.getBytes());
+            out.flush();
+        } catch (IOException ex) {
+            System.out.println("The client is disconnected already");
+        }
+    }
+    void joinStudio(int StudioNum)
+    {   groupNo = StudioNum;
+        try {
+            out.writeInt(3); // send the message type
+            out.writeInt(StudioNum);
         } catch (IOException ex) {
             System.out.println("The client is disconnected already");
         }

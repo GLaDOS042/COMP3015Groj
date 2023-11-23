@@ -26,6 +26,9 @@ import javax.swing.border.LineBorder;
 enum PaintMode {Pixel, Area};
 
 public class UI extends JFrame {
+	String[] StudioName;
+	ImageIcon[] img;
+
 	String UserName;
 	Socket socket;
 	DataInputStream in;
@@ -97,6 +100,12 @@ public class UI extends JFrame {
 		Thread t = new Thread(() -> {
 			inputHandler.receive();
 		});
+		t.start();
+		FindStudio finder2 = new FindStudio(this);
+		while(StudioName == null)
+		{
+		}
+		finder2.getStudioNum();
 		Thread i = new Thread(() -> {
 			outputHandler.requestCopy();
 			try {
@@ -105,8 +114,6 @@ public class UI extends JFrame {
 				throw new RuntimeException(e);
 			}
 		});
-
-		t.start();
 		i.start();
 		setTitle("KidPaint");
 
@@ -428,7 +435,6 @@ public class UI extends JFrame {
 		this.data = data;
 		this.blockSize = blockSize;
 		paintPanel.setPreferredSize(new Dimension(data.length * blockSize, data[0].length * blockSize));
-		outputHandler.requestCopy();
 		paintPanel.repaint();
 	}
 }
