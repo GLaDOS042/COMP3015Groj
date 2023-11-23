@@ -104,6 +104,16 @@ public class UI extends JFrame {
 		FindStudio finder2 = new FindStudio(this);
 		while(StudioName == null)
 		{
+			if (StudioName != null)
+				break;
+			try
+			{
+				Thread.sleep(0);
+			}
+			catch (InterruptedException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
 		finder2.getStudioNum();
 		Thread i = new Thread(() -> {
