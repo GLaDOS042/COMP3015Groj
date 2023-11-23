@@ -176,6 +176,7 @@ public class Server {
 					out.writeInt(data.get(Group).data[i][j]);
 				}
 			}
+
 			out.flush();
 		} catch (IOException ex) {
 			System.out.println("The client is disconnected already");
