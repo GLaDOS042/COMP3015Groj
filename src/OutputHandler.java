@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -162,5 +163,22 @@ public class OutputHandler {
             System.out.println("The client is disconnected already");
         }
     }
+
+    void Undo(int x, int y, PixelRecord pixelRecord)
+    {
+        try {
+            out.writeInt(4); // send the message type
+            out.writeInt(groupNo);
+            out.writeInt(x);
+            out.writeInt(y);
+            out.writeLong(pixelRecord.userEditTime);
+            out.writeInt(pixelRecord.color);
+            out.writeLong(pixelRecord.lastEditTime);
+            out.flush();
+        } catch (IOException ex) {
+            System.out.println("The client is disconnected already");
+        }
+    }
+
 
 }

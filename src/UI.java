@@ -14,8 +14,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -26,6 +25,9 @@ import javax.swing.border.LineBorder;
 enum PaintMode {Pixel, Area};
 
 public class UI extends JFrame {
+	Set<String> CurrtentAction;
+	List<HashMap<String, PixelRecord>> ActionHistory;
+	int actionCounter = -1;
 	String[] StudioName;
 	ImageIcon[] img;
 
@@ -45,6 +47,7 @@ public class UI extends JFrame {
 
 	private JToggleButton save;
 	private JToggleButton load;
+	private JToggleButton undo;
 
 	private static UI instance;
 	private int selectedColor = -543230; // golden
@@ -97,6 +100,8 @@ public class UI extends JFrame {
 		out = new DataOutputStream(socket.getOutputStream());
 		inputHandler = new InputHandler(in,this);
 		outputHandler = new OutputHandler(out);
+		ActionHistory = new ArrayList<>();
+		CurrtentAction = new HashSet<>();
 		Thread t = new Thread(() -> {
 			inputHandler.receive();
 		});
@@ -176,6 +181,7 @@ public class UI extends JFrame {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				newAction();
 			}
 
 			// handle the mouse-up event of the paint panel
@@ -189,7 +195,7 @@ public class UI extends JFrame {
 					Pixel p = new Pixel(selectedColor,e.getX()/blockSize,e.getY()/blockSize);
 					outputHandler.sendPixel(p);
 				}
-
+				CurrtentAction = new HashSet<>();
 			}
 		});
 
@@ -197,10 +203,16 @@ public class UI extends JFrame {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
+
 				if (paintMode == PaintMode.Pixel && e.getX() >= 0 && e.getY() >= 0)
 				{
 					Pixel p = new Pixel(selectedColor,e.getX()/blockSize,e.getY()/blockSize);
-					outputHandler.sendPixel(p);
+					if(!CurrtentAction.contains(encodeKey(p.x,p.y))|| (selectedColor != data[p.x][p.y]))
+					{
+						CurrtentAction.add(encodeKey(p.x,p.y));
+						outputHandler.sendPixel(p);
+					}
+
 				}
 
 			}
@@ -267,8 +279,10 @@ public class UI extends JFrame {
 
 		save = new JToggleButton("Save");
 		toolPanel.add(save);
-		load = new JToggleButton("load");
+		load = new JToggleButton("Load");
 		toolPanel.add(load);
+		undo = new JToggleButton("Undo");
+		toolPanel.add(undo);
 		// change the paint mode to PIXEL mode
 		tglPen.addActionListener(new ActionListener() {
 			@Override
@@ -298,7 +312,14 @@ public class UI extends JFrame {
 		load.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				newAction();
 				inputHandler.load();
+			}
+		});
+		undo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Undo();
 			}
 		});
 
@@ -446,5 +467,53 @@ public class UI extends JFrame {
 		this.blockSize = blockSize;
 		paintPanel.setPreferredSize(new Dimension(data.length * blockSize, data[0].length * blockSize));
 		paintPanel.repaint();
+	}
+	public String encodeKey(int x, int y) {
+		return x + "X" + y;
+	}
+
+	public int[] decodeKey(String key) {
+		String[] coordinates = key.split("X");
+		int x = Integer.parseInt(coordinates[0]);
+		int y = Integer.parseInt(coordinates[1]);
+		return new int[]{x, y};
+	}
+
+	public void add(int x, int y, PixelRecord record) {//inputHandler
+		String key = encodeKey(x, y);
+		ActionHistory.get(actionCounter).put(key, record);
+	}
+
+	public void newAction() {
+		actionCounter++;
+		ActionHistory.add(new HashMap<String, PixelRecord>());
+	}
+
+
+	public Set<String> getAllKeys() {
+		return ActionHistory.get(actionCounter).keySet();
+	}
+
+	public void Undo() {    //outputHandler
+		System.out.println("Undo pressed");
+		if (actionCounter < 0) {
+			return;
+		}
+		int deleted = 0;
+		Set<String> keys = getAllKeys();
+		for (String key : keys) {
+			int[] coordinates = decodeKey(key);
+			int x = coordinates[0];
+			int y = coordinates[1];
+			PixelRecord record = ActionHistory.get(actionCounter).get(key);
+			System.out.println("Undoing: " + x + " " + y + " " + record.color + " " + record.lastEditTime);
+			outputHandler.Undo(x, y, record);
+			deleted++;
+		}
+		ActionHistory.remove(actionCounter--);
+		System.out.println("Action counter: " + actionCounter);
+		System.out.println("Action history size: " + ActionHistory.size());
+		System.out.println("Deleted: " + deleted);
+		outputHandler.requestCopy();
 	}
 }

@@ -30,6 +30,12 @@ public class InputHandler {
                     case 2:
                         receiveGroupPixelMessage();
                         break;
+                    case 4:
+                        receivePixelHistory();
+                        break;
+                    case 5:
+                        updatePixelHistory();
+                        break;
                     case 42:
                         receiveCopy();
                         break;
@@ -165,6 +171,22 @@ public class InputHandler {
             StudioName[i] = new String(buffer, 0, len);
         }
         ui.StudioName = StudioName;
+
+    }
+
+    private void receivePixelHistory() throws IOException{
+        //TODO: we do it later!!
+        int x = in.readInt();
+        int y = in.readInt();
+        Long userEditTime = in.readLong();
+        int color = in.readInt();
+        Long lastEditTime =in.readLong();
+
+        ui.add(x,y,new PixelRecord(color,userEditTime,lastEditTime));
+
+    }
+
+    private void updatePixelHistory() throws IOException{
 
     }
 }

@@ -22,7 +22,6 @@ public class FindStudio extends JFrame {
 
         int selectedOption = JOptionPane.showOptionDialog(null, "Select a studio", "Studio Selection",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-        System.out.println(selectedOption);
         if (selectedOption == 0) {
             int canvasSizeX = Integer.parseInt(JOptionPane.showInputDialog("Enter the canvas size (x):"));
             int canvasSizeY = Integer.parseInt(JOptionPane.showInputDialog("Enter the canvas size (y):"));
